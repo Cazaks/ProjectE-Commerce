@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @SpringBootTest
 class UserServiceImplTest {
 
@@ -32,6 +35,14 @@ class UserServiceImplTest {
     @Test
     void TestThatRegistrationRequestIsSuccessful() {
         User savedUser = userService.registerUser(registrationRequest);
+
+        assertNotNull(savedUser);
+        assertNotNull(savedUser.getId());
+        assertEquals("ezak@gmail.com", savedUser.getEmail());
+
+        User foundUser = userRepository.findByEmail("ezak@gmail.com").orElse(null);
+        assertNotNull(foundUser);
+        assertEquals("Caleb Ezak", foundUser.getFirstName());
     }
 
     @AfterEach

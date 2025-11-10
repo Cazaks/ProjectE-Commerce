@@ -1,6 +1,7 @@
 package com.ecommerce.services;
 
 import com.ecommerce.DTOs.request.RegistrationRequest;
+import com.ecommerce.data.model.User;
 import com.ecommerce.data.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     @Override
-    public void registerUser(RegistrationRequest registrationRequest) {
+    public User registerUser(RegistrationRequest registrationRequest) {
 
+        return null;
     }
 
 
