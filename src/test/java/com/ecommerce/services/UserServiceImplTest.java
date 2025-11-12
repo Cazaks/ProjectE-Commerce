@@ -96,7 +96,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void TestThatRegistrationThrowsInvalidErrorWhenUserNameIsEmpty() {
+    void TestThatRegistrationThrowsEmptyUserNaneErrorWhenUserNameIsEmpty() {
         registrationRequest.setUserName("");
 
         try{
@@ -108,6 +108,22 @@ class UserServiceImplTest {
             assertEquals("Full name and username are required", ex.getReason());
         }
     }
+
+    @Test
+    void TestThatRegistrationThrowsFullNameErrorWhenFullNameIsEmpty() {
+       registrationRequest.setFullName("");
+
+       try{
+           userService.registerUser(registrationRequest);
+           fail("Expected ResponseStatusException but none was thrown");
+       }catch (ResponseStatusException ex) {
+
+           assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+           assertEquals("Full name and username are required", ex.getReason());
+       }
+
+    }
+
 
     @AfterEach
     void tearDown() {
