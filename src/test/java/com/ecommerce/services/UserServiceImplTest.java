@@ -60,11 +60,25 @@ class UserServiceImplTest {
 
         try{
             userService.registerUser(registrationRequest);
-            fail("Expected IllegalArgumentException but none was thrown");
+            fail("Expected ResponseStatusException but none was thrown");
         } catch (ResponseStatusException ex) {
 
             assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
             assertEquals("Invalid email address", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatRegistrationThrowsInvalidErrorWhenEmailIsEmpty() {
+
+        registrationRequest.setEmail("");
+        try{
+            userService.registerUser(registrationRequest);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Email is required", ex.getReason());
         }
     }
 
