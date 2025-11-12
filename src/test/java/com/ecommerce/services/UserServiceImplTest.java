@@ -123,6 +123,19 @@ class UserServiceImplTest {
        }
 
     }
+    @Test
+    void TestThatRegistrationThrowsEmptyPasswordErrorWhenPasswordIsEmpty() {
+        registrationRequest.setPassword("");
+
+        try{
+            userService.registerUser(registrationRequest);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Password is required", ex.getReason());
+        }
+    }
 
 
     @AfterEach
