@@ -1,14 +1,19 @@
 package com.ecommerce.services;
 
 import com.ecommerce.DTOs.request.RegistrationRequest;
+import com.ecommerce.DTOs.response.RegistrationResponse;
 import com.ecommerce.data.model.User;
+import com.ecommerce.data.model.UserRole;
 import com.ecommerce.data.repositories.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
+import static org.assertj.core.api.Fail.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -30,11 +35,13 @@ class UserServiceImplTest {
         registrationRequest.setUserName("Cazak");
         registrationRequest.setEmail("ezak@gmail.com");
         registrationRequest.setPassword("12345");
+        registrationRequest.setAddress("Logos, Nigeria");
+
     }
 
     @Test
     void TestThatRegistrationRequestIsSuccessful() {
-        User savedUser = userService.registerUser(registrationRequest);
+        RegistrationResponse savedUser = userService.registerUser(registrationRequest);
 
         assertNotNull(savedUser);
         assertNotNull(savedUser.getId());
@@ -42,7 +49,23 @@ class UserServiceImplTest {
 
         User foundUser = userRepository.findByEmail("ezak@gmail.com").orElse(null);
         assertNotNull(foundUser);
-        assertEquals("Caleb Ezak", foundUser.getFirstName());
+        assertEquals("Caleb", foundUser.getFirstName());
+        assertEquals("Ezak", foundUser.getLastName());
+        assertEquals(UserRole.CUSTOMER, foundUser.getRole());
+    }
+
+    @Test
+    void TestThatRegistrationThrowsInvalidErrorWithInvalidEmail() {
+        registrationRequest.setEmail("Invalid-Email");
+
+        try{
+            userService.registerUser(registrationRequest);
+            fail("Expected IllegalArgumentException but none was thrown");
+        } catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Invalid email address", ex.getReason());
+        }
     }
 
     @AfterEach
