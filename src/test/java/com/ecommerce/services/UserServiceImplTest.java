@@ -119,7 +119,26 @@ class UserServiceImplTest {
         }
     }
 
+    @Test
+    void TestThatRegistrationThrowsUsernameAlreadyExistError() {
 
+        userService.registerUser(registrationRequest);
+
+        RegistrationRequest newRequest = new RegistrationRequest();
+        newRequest.setFullName("Another User");
+        newRequest.setUserName("Cazak");
+        newRequest.setEmail("anotheremail@gmail.com");
+        newRequest.setPassword("Valid123");
+        newRequest.setAddress("Lagos, Nigeria");
+
+        try {
+            userService.registerUser(newRequest);
+            fail("Expected ResponseStatusException but none was thrown");
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Username already exists", ex.getReason());
+        }
+    }
 
 
     @Test
@@ -191,7 +210,6 @@ class UserServiceImplTest {
 
     @Test
     void TestThatLoginIsSuccessful() {
-        // Register user first
         userService.registerUser(registrationRequest);
 
         LoginResponse response = userService.loginUser(loginRequestByEmail);
@@ -200,4 +218,6 @@ class UserServiceImplTest {
         assertEquals("Login successful", response.getMessage());
         assertEquals("ezak@gmail.com", response.getEmail());
     }
+
+
 }
