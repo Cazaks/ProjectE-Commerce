@@ -84,6 +84,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse loginUser(LoginRequest loginRequest) {
 
+        if(loginRequest.getEmailOrUsername() == null || loginRequest.getEmailOrUsername().trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email or username is required");
+        }
+
         String identifier = loginRequest.getEmailOrUsername();
         Optional<User> user;
 
@@ -91,10 +95,6 @@ public class UserServiceImpl implements UserService {
             user = userRepository.findByEmail(identifier);
         } else {
             user = userRepository.findByUserName(identifier);
-        }
-
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
         }
 
         if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
