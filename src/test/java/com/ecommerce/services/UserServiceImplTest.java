@@ -1,6 +1,8 @@
 package com.ecommerce.services;
 
+import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
+import com.ecommerce.DTOs.response.LoginResponse;
 import com.ecommerce.DTOs.response.RegistrationResponse;
 import com.ecommerce.data.model.User;
 import com.ecommerce.data.model.UserRole;
@@ -29,12 +31,12 @@ class UserServiceImplTest {
     private UserService userService;
 
     private RegistrationRequest registrationRequest;
-
+    private LoginRequest loginRequestByEmail;
+    private LoginRequest loginRequestByUsername;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
     void setUp() {
-
         userRepository.deleteAll();
 
         registrationRequest = new RegistrationRequest();
@@ -43,6 +45,14 @@ class UserServiceImplTest {
         registrationRequest.setEmail("ezak@gmail.com");
         registrationRequest.setPassword("Valid123");
         registrationRequest.setAddress("Lagos, Nigeria");
+
+        loginRequestByEmail = new LoginRequest();
+        loginRequestByEmail.setEmailOrUsername("ezak@gmail.com");
+        loginRequestByEmail.setPassword("Valid123");
+
+        loginRequestByUsername = new LoginRequest();
+        loginRequestByUsername.setEmailOrUsername("Cazak");
+        loginRequestByUsername.setPassword("Valid123");
     }
 
     @AfterEach
@@ -63,8 +73,8 @@ class UserServiceImplTest {
             fail("User should exist after registration");
         }
 
-        assertEquals("Caleb", foundUser.get().getFirstName());
-        assertEquals("Ezak", foundUser.get().getLastName());
+        assertEquals("Caleb Ezak", foundUser.get().getFullName());
+        assertEquals("Cazak", foundUser.get().getUserName());
         assertEquals(UserRole.CUSTOMER, foundUser.get().getRole());
         assertTrue(bCryptPasswordEncoder.matches("Valid123", foundUser.get().getPassword()));
     }
@@ -97,6 +107,7 @@ class UserServiceImplTest {
 
     @Test
     void TestThatRegistrationThrowsEmailAlreadyExistError() {
+
         userService.registerUser(registrationRequest);
 
         try {
@@ -107,6 +118,9 @@ class UserServiceImplTest {
             assertEquals("Email already exists", ex.getReason());
         }
     }
+
+
+
 
     @Test
     void TestThatRegistrationThrowsEmptyUserNameError() {
@@ -150,6 +164,7 @@ class UserServiceImplTest {
     @Test
     void TestThatPasswordThrowsWeakPasswordError() {
         registrationRequest.setPassword("12345");
+        registrationRequest.setEmail("uniqueemail@gmail.com");
 
         try {
             userService.registerUser(registrationRequest);
@@ -163,7 +178,6 @@ class UserServiceImplTest {
 
     @Test
     void TestThatRegistrationThrowsEmptyAddressError() {
-        registrationRequest.setPassword("Valid123");
         registrationRequest.setAddress("");
 
         try {
@@ -173,5 +187,17 @@ class UserServiceImplTest {
             assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
             assertEquals("Address is required", ex.getReason());
         }
+    }
+
+    @Test
+    void TestThatLoginIsSuccessful() {
+        // Register user first
+        userService.registerUser(registrationRequest);
+
+        LoginResponse response = userService.loginUser(loginRequestByEmail);
+
+        assertNotNull(response);
+        assertEquals("Login successful", response.getMessage());
+        assertEquals("ezak@gmail.com", response.getEmail());
     }
 }
