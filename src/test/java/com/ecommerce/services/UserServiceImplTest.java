@@ -219,5 +219,18 @@ class UserServiceImplTest {
         assertEquals("ezak@gmail.com", response.getEmail());
     }
 
+    @Test
+    void TestThatLoginThrowsUnsuccessfulLoginErrorWhenEmailIsEmpty() {
 
+        loginRequestByEmail.setEmailOrUsername("");
+
+        try {
+            userService.loginUser(loginRequestByEmail);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Email or username is required", ex.getReason());
+        }
+    }
 }
