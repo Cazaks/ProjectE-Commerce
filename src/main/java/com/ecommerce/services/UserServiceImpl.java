@@ -47,13 +47,14 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address");
         }
 
+        if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        }
+
         if(userRepository.findByUserName(registrationRequest.getUserName()).isPresent()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
         }
 
-        if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
-        }
 
         if (!registrationRequest.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -80,21 +81,46 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-
     @Override
     public LoginResponse loginUser(LoginRequest loginRequest) {
 
-        if(loginRequest.getEmailOrUsername() == null || loginRequest.getEmailOrUsername().trim().isBlank()){
+        if (loginRequest.getEmailOrUsername() == null || loginRequest.getEmailOrUsername().trim().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email or username is required");
+        }
+
+        if (loginRequest.getPassword() == null || loginRequest.getPassword().trim().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required");
         }
 
         String identifier = loginRequest.getEmailOrUsername();
         Optional<User> user;
 
         if (identifier.contains("@")) {
+
+            if (!identifier.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Email or username is not valid, enter valid credentials");
+            }
+
             user = userRepository.findByEmail(identifier);
+
+            if (!user.isPresent()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Email or username is not valid, enter valid credentials");
+            }
+
         } else {
+            if (!identifier.matches("^[A-Za-z0-9]{3,}$")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Email or username is not valid, enter valid credentials");
+            }
+
             user = userRepository.findByUserName(identifier);
+
+            if (!user.isPresent()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Email or username is not valid, enter valid credentials");
+            }
         }
 
         if (!bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
@@ -102,14 +128,13 @@ public class UserServiceImpl implements UserService {
         }
 
         LoginResponse response = new LoginResponse();
-        response.setId(user.get().getId());
-        response.setEmail(user.get().getEmail());
-        response.setUsername(user.get().getUserName());
-        response.setFullName(user.get().getFullName());
+        response.setId(user.get().getId().trim());
+        response.setEmail(user.get().getEmail().trim());
+        response.setUsername(user.get().getUserName().trim());
+        response.setFullName(user.get().getFullName().trim());
         response.setMessage("Login successful");
 
         return response;
     }
-
 
 }
