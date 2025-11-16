@@ -233,4 +233,92 @@ class UserServiceImplTest {
             assertEquals("Email or username is required", ex.getReason());
         }
     }
+
+    @Test
+    void TestThatLoginThrowsUnsuccessfulLoginErrorWhenPasswordIsEmpty() {
+        loginRequestByEmail.setPassword("");
+
+        try{
+            userService.loginUser(loginRequestByEmail);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Password is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatLoginThrowsUnsuccessfulLoginErrorWhenPasswordIsIncorrect() {
+
+        userService.registerUser(registrationRequest);
+        loginRequestByEmail.setPassword("IncorrectPassword");
+
+        try{
+            userService.loginUser(loginRequestByEmail);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Incorrect password", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatLoginThrowsUnsuccessfulLoginErrorWhenUsernameIsEmpty() {
+
+        loginRequestByUsername.setEmailOrUsername("");
+
+        try {
+            userService.loginUser(loginRequestByUsername);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Email or username is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatLoginThrowsUserNotFoundErrorWhenUsernameDoesNotExist() {
+
+        loginRequestByUsername.setEmailOrUsername("UnknownUser123");
+
+        try {
+            userService.loginUser(loginRequestByUsername);
+            fail("Expected ResponseStatusException but none was thrown");
+        } catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Email or username is not valid, enter valid credentials", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestLoginThrowInvalidEmailErrorWhenEmailIsNotValid() {
+
+        loginRequestByEmail.setEmailOrUsername("invalidEmail");
+        try {
+            userService.loginUser(loginRequestByEmail);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Email or username is not valid, enter valid credentials", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatLoginThrowsInvalidUserNameErrorWhenUserNameIsNotValid() {
+
+        loginRequestByUsername.setEmailOrUsername("ab!");
+        try {
+            userService.loginUser(loginRequestByUsername);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Email or username is not valid, enter valid credentials", ex.getReason());
+        }
+    }
 }
