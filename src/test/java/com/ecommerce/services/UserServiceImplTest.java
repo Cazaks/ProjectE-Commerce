@@ -321,4 +321,74 @@ class UserServiceImplTest {
             assertEquals("Email or username is not valid, enter valid credentials", ex.getReason());
         }
     }
+
+    @Test
+    void TestThatPromoteToSellerIsSuccessful() {
+
+        RegistrationResponse response = userService.registerUser(registrationRequest);
+
+
+        User user = userRepository.findById(response.getId()).get();
+        assertEquals(UserRole.CUSTOMER, user.getRole());
+
+
+        userService.promoteToSeller(response.getId());
+
+        User updatedUser = userRepository.findById(response.getId()).get();
+        assertEquals(UserRole.SELLER, updatedUser.getRole());
+    }
+
+    @Test
+    void TestThatPromoteToSellerThrowsErrorWhenUserIdIsNull() {
+        try {
+            userService.promoteToSeller(null);
+            fail("Expected ResponseStatusException but none was thrown");
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("User ID is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatPromoteToSellerThrowsErrorWhenUserIdIsBlank() {
+        try {
+            userService.promoteToSeller("   ");
+            fail("Expected ResponseStatusException but none was thrown");
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("User ID is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatPromoteToSellerThrowsErrorWhenUserIsNotFound() {
+
+        try {
+            userService.promoteToSeller("unknown-id-123");
+            fail("Expected ResponseStatusException but none was thrown");
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+            assertEquals("User not found", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatPromoteToSellerThrowsErrorWhenUserIsAlreadySeller() {
+
+        RegistrationResponse response = userService.registerUser(registrationRequest);
+
+        User user = userRepository.findById(response.getId()).get();
+        user.setRole(UserRole.SELLER);
+        userRepository.save(user);
+
+        try {
+            userService.promoteToSeller(response.getId());
+            fail("Expected ResponseStatusException but none was thrown");
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("User is already a seller", ex.getReason());
+        }
+    }
+
+
 }
