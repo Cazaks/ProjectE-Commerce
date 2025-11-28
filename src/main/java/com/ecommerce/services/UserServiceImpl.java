@@ -4,6 +4,7 @@ import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
 import com.ecommerce.DTOs.response.LoginResponse;
 import com.ecommerce.DTOs.response.RegistrationResponse;
+import com.ecommerce.DTOs.response.ResponseUpdateProfileDtos;
 import com.ecommerce.data.model.User;
 import com.ecommerce.data.model.UserRole;
 import com.ecommerce.data.repositories.UserRepository;
@@ -135,6 +136,36 @@ public class UserServiceImpl implements UserService {
         response.setMessage("Login successful");
 
         return response;
+    }
+
+    @Override
+    public ResponseUpdateProfileDtos updateProfile(String id, ResponseUpdateProfileDtos responseUpdateProfileDtos){
+        return null;
+    }
+
+
+    @Override
+    public void promoteToSeller(String userId) {
+
+        if (userId == null || userId.trim().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID is required");
+        }
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (!optionalUser.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        User user = optionalUser.get();
+
+        if (user.getRole() == UserRole.SELLER) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already a seller");
+        }
+
+        user.setRole(UserRole.SELLER);
+
+        userRepository.save(user);
     }
 
 }
