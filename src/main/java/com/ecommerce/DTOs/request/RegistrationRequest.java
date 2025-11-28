@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 @NoArgsConstructor
 public class RegistrationRequest {
 
-    private String FullName;
-    private String UserName;
-    private String Email;
-    private String Password;
+    private String fullName;
+    private String userName;
+    private String email;
+    private String password;
+    private String address;
 }
