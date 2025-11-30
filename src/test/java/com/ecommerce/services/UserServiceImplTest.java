@@ -2,8 +2,10 @@ package com.ecommerce.services;
 
 import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
+import com.ecommerce.DTOs.request.RequestUpdateProfileDtos;
 import com.ecommerce.DTOs.response.LoginResponse;
 import com.ecommerce.DTOs.response.RegistrationResponse;
+import com.ecommerce.DTOs.response.ResponseUpdateProfileDtos;
 import com.ecommerce.data.model.User;
 import com.ecommerce.data.model.UserRole;
 import com.ecommerce.data.repositories.UserRepository;
@@ -33,6 +35,7 @@ class UserServiceImplTest {
     private RegistrationRequest registrationRequest;
     private LoginRequest loginRequestByEmail;
     private LoginRequest loginRequestByUsername;
+    private RequestUpdateProfileDtos requestUpdateProfile;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
@@ -53,6 +56,11 @@ class UserServiceImplTest {
         loginRequestByUsername = new LoginRequest();
         loginRequestByUsername.setEmailOrUsername("Cazak");
         loginRequestByUsername.setPassword("Valid123");
+
+        requestUpdateProfile = new RequestUpdateProfileDtos();
+        requestUpdateProfile.setFullName("Caleb Osowoatuobim");
+        requestUpdateProfile.setUserName("Cazswo");
+        requestUpdateProfile.setAddress("Lawanson Road, Surulere, Lagos");
     }
 
     @AfterEach
@@ -387,6 +395,37 @@ class UserServiceImplTest {
         } catch (ResponseStatusException ex) {
             assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
             assertEquals("User is already a seller", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdatedUserProfileIsSuccessful() {
+        RegistrationResponse registerResponse = userService.registerUser(registrationRequest);
+
+        ResponseUpdateProfileDtos responseUpdate = userService.updateProfile(
+                registerResponse.getId(),
+                requestUpdateProfile
+        );
+
+        assertNotNull(responseUpdate);
+        assertEquals(registerResponse.getId(), responseUpdate.getUserId());
+        assertEquals("Caleb Osowoatuobim", responseUpdate.getFullName());
+        assertEquals("Cazswo", responseUpdate.getUserName());
+        assertEquals("Lawanson Road, Surulere, Lagos", responseUpdate.getAddress());
+        assertEquals("profile update successful", responseUpdate.getMessage());
+
+    }
+
+    @Test
+    void TestThatUpdateThrowsErrorWhenUserIsNotFound() {
+
+        try {
+            userService.updateProfile("123-id-invalid", requestUpdateProfile);
+                    fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex){
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("User not found", ex.getReason());
         }
     }
 

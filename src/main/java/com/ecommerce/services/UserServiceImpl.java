@@ -2,6 +2,7 @@ package com.ecommerce.services;
 
 import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
+import com.ecommerce.DTOs.request.RequestUpdateProfileDtos;
 import com.ecommerce.DTOs.response.LoginResponse;
 import com.ecommerce.DTOs.response.RegistrationResponse;
 import com.ecommerce.DTOs.response.ResponseUpdateProfileDtos;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -138,11 +140,6 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    @Override
-    public ResponseUpdateProfileDtos updateProfile(String id, ResponseUpdateProfileDtos responseUpdateProfileDtos){
-        return null;
-    }
-
 
     @Override
     public void promoteToSeller(String userId) {
@@ -166,6 +163,32 @@ public class UserServiceImpl implements UserService {
         user.setRole(UserRole.SELLER);
 
         userRepository.save(user);
+    }
+
+    @Override
+    public ResponseUpdateProfileDtos updateProfile(String id, RequestUpdateProfileDtos requestDto){
+
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        User updatedUser = optionalUser.get();
+        updatedUser.setFullName(requestDto.getFullName());
+        updatedUser.setUserName(requestDto.getUserName());
+        updatedUser.setAddress(requestDto.getAddress());
+        updatedUser.setUpdateDate(LocalDateTime.now());
+
+        User savedUser = userRepository.save(updatedUser);
+
+        ResponseUpdateProfileDtos response = new ResponseUpdateProfileDtos();
+        response.setUserId(savedUser.getId());
+
+        response.setFullName(savedUser.getFullName());
+        response.setUserName(savedUser.getUserName());
+        response.setEmail(savedUser.getEmail());
+        response.setAddress(savedUser.getAddress());
+        response.setUpdateDate(savedUser.getUpdateDate());
+        response.setMessage("profile update successful");
+
+        return response;
     }
 
 }
