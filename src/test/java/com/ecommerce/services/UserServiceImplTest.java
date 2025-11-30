@@ -417,17 +417,70 @@ class UserServiceImplTest {
     }
 
     @Test
+    void TestThatUpdateProfileThrowsErrorWhenUserUserIdIsBlank() {
+
+        try {
+            userService.updateProfile("", requestUpdateProfile);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex){
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("User ID must not be empty", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProfileThrowsErrorWhenUserNameIsEmpty() {
+
+        requestUpdateProfile.setFullName("");
+        try {
+            userService.updateProfile("", requestUpdateProfile);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex){
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Full name is required", ex.getReason());
+        }
+    }
+
+    @Test
     void TestThatUpdateThrowsErrorWhenUserIsNotFound() {
 
         try {
             userService.updateProfile("123-id-invalid", requestUpdateProfile);
-                    fail("Expected ResponseStatusException but none was thrown");
-        }catch (ResponseStatusException ex){
+            fail("Expected ResponseStatusException but none was thrown");
+        } catch (ResponseStatusException ex) {
 
             assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
             assertEquals("User not found", ex.getReason());
         }
     }
 
+    @Test
+    void TestThatUpdateProfileThrowsErrorWhenUserNameIsBlank() {
+        requestUpdateProfile.setUserName(" ");
 
-}
+        try {
+            userService.updateProfile("123-id-invalid", requestUpdateProfile);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex){
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Username is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProfileThrowsErrorWhenUserWhenAddressIsBlank() {
+        requestUpdateProfile.setAddress(null);
+        try {
+            userService.updateProfile("123-id-invalid", requestUpdateProfile);
+            fail("Expected ResponseStatusException but none was thrown");
+        }catch (ResponseStatusException ex){
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Address is required", ex.getReason());
+        }
+        }
+
+    }
