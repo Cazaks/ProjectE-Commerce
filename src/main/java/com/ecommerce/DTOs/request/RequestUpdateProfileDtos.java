@@ -1,6 +1,5 @@
-package com.ecommerce.DTOs.request;
+package com.ecommerce.DTOs.request.userRequest;
 
-import com.ecommerce.data.model.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
