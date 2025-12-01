@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -13,12 +14,12 @@ import java.time.LocalDateTime;
 
 public class ResponseUpdateProfileDtos {
 
-    private String id;
+    private String userId;
     private String fullName;
     private String userName;
     private String address;
     private String email;
-    private LocalDateTime updateDate;
+    private Date updateDate;
     private String message;
 
 }

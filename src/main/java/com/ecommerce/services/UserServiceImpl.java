@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -195,7 +196,7 @@ public class UserServiceImpl implements UserService {
         updatedUser.setFullName(requestDto.getFullName());
         updatedUser.setUserName(requestDto.getUserName());
         updatedUser.setAddress(requestDto.getAddress());
-        updatedUser.setUpdateDate(LocalDateTime.now());
+        updatedUser.setUpdateDate(new Date());
 
         User savedUser = userRepository.save(updatedUser);
 

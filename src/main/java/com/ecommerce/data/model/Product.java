@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Product {
 
     @Id
-    private Long productId;
+    private String productId;
     private String name;
     private String description;
     private Double price;

@@ -2,8 +2,10 @@ package com.ecommerce.controllers;
 
 import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
+import com.ecommerce.DTOs.request.RequestUpdateProfileDtos;
 import com.ecommerce.DTOs.response.LoginResponse;
 import com.ecommerce.DTOs.response.RegistrationResponse;
+import com.ecommerce.DTOs.response.ResponseUpdateProfileDtos;
 import com.ecommerce.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,11 +32,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping("/promote/{userId}")
     public ResponseEntity<String> promote(@PathVariable("userId") String userId) {
         userService.promoteToSeller(userId);
         return ResponseEntity.ok("User promoted to Seller successfully");
+    }
+
+    @PatchMapping("/profile/{userId}")
+    public ResponseEntity<?> profileUpdate(
+            @PathVariable("userId") String userId,
+            @RequestBody RequestUpdateProfileDtos requestDto) {
+        ResponseUpdateProfileDtos responseUpdate = userService.updateProfile(userId, requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseUpdate);
     }
 
 }
