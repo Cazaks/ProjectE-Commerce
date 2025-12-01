@@ -170,6 +170,27 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> optionalUser = userRepository.findById(id);
 
+
+        if(requestDto.getFullName() == null || requestDto.getFullName().trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full name is required");
+        }
+
+        if(requestDto.getUserName() == null || requestDto.getUserName().trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+        }
+
+        if(requestDto.getAddress() == null || requestDto.getAddress().trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address is required");
+        }
+
+        if(id == null || id.trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID must not be empty");
+        }
+
+        if(!optionalUser.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
+        }
+
         User updatedUser = optionalUser.get();
         updatedUser.setFullName(requestDto.getFullName());
         updatedUser.setUserName(requestDto.getUserName());
