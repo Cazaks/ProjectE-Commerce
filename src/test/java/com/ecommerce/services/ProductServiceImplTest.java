@@ -85,10 +85,23 @@ class ProductServiceImplTest {
 
         try {
             productService.createProduct(createRequest);
-            AssertionsForClassTypes.fail("Exception expected");
+            fail("Exception expected");
         } catch (ResponseStatusException ex) {
             assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
             assertEquals("Product name cannot be empty", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatProductCreationThrowsInvalidErrorWhenProductDescriptionIsEmpty() {
+        createRequest.setProductDescription("");
+        try {
+            productService.createProduct(createRequest);
+            fail("Product description expected");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product description cannot be empty", ex.getReason());
         }
     }
 

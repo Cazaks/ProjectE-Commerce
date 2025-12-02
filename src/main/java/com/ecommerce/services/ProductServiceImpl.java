@@ -27,6 +27,10 @@ public class ProductServiceImpl implements ProductService {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name cannot be empty");
       }
 
+       if(createRequest.getProductDescription() == null || createRequest.getProductDescription().trim().isBlank()){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product description cannot be empty");
+       }
+
         Product productCreated = new Product();
         productCreated.setProductName(createRequest.getProductName());
         productCreated.setProductDescription(createRequest.getProductDescription());
