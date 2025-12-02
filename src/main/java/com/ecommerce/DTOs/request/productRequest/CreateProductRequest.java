@@ -1,4 +1,4 @@
-package com.ecommerce.DTOs.request;
+package com.ecommerce.DTOs.request.productResponse;
 
 import com.ecommerce.data.model.Category;
 import lombok.AllArgsConstructor;
