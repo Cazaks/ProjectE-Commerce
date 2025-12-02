@@ -7,6 +7,7 @@ import com.ecommerce.data.model.Product;
 import com.ecommerce.data.model.User;
 import com.ecommerce.data.repositories.ProductRepository;
 import com.ecommerce.data.repositories.UserRepository;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,5 +79,17 @@ class ProductServiceImplTest {
     }
 
 
+    @Test
+    void TestThatProductCreationThrowInvalidErrorWhenProductNameIsEmpty() {
+        createRequest.setProductName("");
+
+        try {
+            productService.createProduct(createRequest);
+            AssertionsForClassTypes.fail("Exception expected");
+        } catch (ResponseStatusException ex) {
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product name cannot be empty", ex.getReason());
+        }
+    }
 
 }
