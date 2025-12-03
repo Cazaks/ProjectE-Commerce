@@ -1,13 +1,12 @@
 package com.ecommerce.services;
 
-import com.ecommerce.DTOs.request.productResponse.CreateProductRequest;
+import com.ecommerce.DTOs.request.productRequest.CreateProductRequest;
 import com.ecommerce.DTOs.response.productResponse.CreateProductResponse;
 import com.ecommerce.data.model.Category;
 import com.ecommerce.data.model.Product;
 import com.ecommerce.data.model.User;
 import com.ecommerce.data.repositories.ProductRepository;
 import com.ecommerce.data.repositories.UserRepository;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,7 +84,7 @@ class ProductServiceImplTest {
 
         try {
             productService.createProduct(createRequest);
-            fail("Exception expected");
+            fail("Product name expected");
         } catch (ResponseStatusException ex) {
             assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
             assertEquals("Product name cannot be empty", ex.getReason());
@@ -104,5 +103,51 @@ class ProductServiceImplTest {
             assertEquals("Product description cannot be empty", ex.getReason());
         }
     }
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenProductQuantityIsZero() {
+        createRequest.setProductQuantity(0);
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Product quantity expected");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product quantity must be greater than zero", ex.getReason());
+        }
+    }
+
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenProductQuantityIsNegative() {
+        createRequest.setProductQuantity(-1);
+        try {
+            productService.createProduct(createRequest);
+            fail("Expect product quantity to be greater than 0");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product quantity must be greater than zero", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenProductQuantityIsNull() {
+        createRequest.setProductQuantity(null);
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected product quantity");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product quantity is required", ex.getReason());
+        }
+    }
+
+
+
+
 
 }

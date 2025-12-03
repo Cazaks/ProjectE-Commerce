@@ -1,7 +1,7 @@
 package com.ecommerce.services;
 
 
-import com.ecommerce.DTOs.request.productResponse.CreateProductRequest;
+import com.ecommerce.DTOs.request.productRequest.CreateProductRequest;
 import com.ecommerce.DTOs.response.productResponse.CreateProductResponse;
 import com.ecommerce.data.model.Product;
 import com.ecommerce.data.repositories.ProductRepository;
@@ -29,6 +29,15 @@ public class ProductServiceImpl implements ProductService {
 
        if(createRequest.getProductDescription() == null || createRequest.getProductDescription().trim().isBlank()){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product description cannot be empty");
+       }
+
+
+        if(createRequest.getProductQuantity() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity is required");
+        }
+
+       if(createRequest.getProductQuantity() <= 0){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity must be greater than zero");
        }
 
         Product productCreated = new Product();
