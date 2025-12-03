@@ -40,6 +40,14 @@ public class ProductServiceImpl implements ProductService {
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity must be greater than zero");
        }
 
+       if(createRequest.getProductPrice() == null){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price is required");
+       }
+
+       if(createRequest.getProductPrice() <= 0){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price must be greater than zero");
+       }
+
         Product productCreated = new Product();
         productCreated.setProductName(createRequest.getProductName());
         productCreated.setProductDescription(createRequest.getProductDescription());

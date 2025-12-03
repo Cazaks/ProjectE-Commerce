@@ -146,7 +146,54 @@ class ProductServiceImplTest {
         }
     }
 
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenProductPriceIsNull() {
+        createRequest.setProductPrice(null);
 
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected product price");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product price is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenProductPriceIsZero() {
+        createRequest.setProductPrice(00.00);
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected product price greater than 0");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product price must be greater than zero", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenProductPriceIsNegative() {
+        createRequest.setProductPrice(-50.00);
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected product price");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product price must be greater than zero", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatCreateProductIsSuccessfullyCreatedWhenProductPriceIsPositive() {
+        createRequest.setProductPrice(1_2000_000.00);
+
+        productService.createProduct(createRequest);
+    }
 
 
 
