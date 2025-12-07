@@ -14,7 +14,7 @@ public class CreateProductResponse {
     private String productName;
     private String productDescription;
     private Double productPrice;
-    private int productQuantity;
+    private Integer productQuantity;
     private Category productCategory;
     private String sellerId;
 
