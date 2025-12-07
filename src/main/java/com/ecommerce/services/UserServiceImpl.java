@@ -3,7 +3,7 @@ package com.ecommerce.services;
 import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
 import com.ecommerce.DTOs.request.RequestUpdateProfileDtos;
-import com.ecommerce.DTOs.response.LoginResponse;
+import com.ecommerce.DTOs.response.userResponseDtos.LoginResponse;
 import com.ecommerce.DTOs.response.RegistrationResponse;
 import com.ecommerce.DTOs.response.ResponseUpdateProfileDtos;
 import com.ecommerce.data.model.User;
@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -24,7 +23,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public RegistrationResponse registerUser(RegistrationRequest registrationRequest) {
@@ -77,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
 
         RegistrationResponse response = new RegistrationResponse();
-        response.setId(savedUser.getId());
+        response.setId(savedUser.getUserId());
         response.setEmail(savedUser.getEmail());
         response.setFullName(savedUser.getFullName());
         response.setMessage("Registered Successfully");
@@ -132,7 +131,7 @@ public class UserServiceImpl implements UserService {
         }
 
         LoginResponse response = new LoginResponse();
-        response.setId(user.get().getId().trim());
+        response.setId(user.get().getUserId().trim());
         response.setEmail(user.get().getEmail().trim());
         response.setUsername(user.get().getUserName().trim());
         response.setFullName(user.get().getFullName().trim());
@@ -201,7 +200,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(updatedUser);
 
         ResponseUpdateProfileDtos response = new ResponseUpdateProfileDtos();
-        response.setUserId(savedUser.getId());
+        response.setUserId(savedUser.getUserId());
 
         response.setFullName(savedUser.getFullName());
         response.setUserName(savedUser.getUserName());

@@ -3,12 +3,13 @@ package com.ecommerce.services;
 import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
 import com.ecommerce.DTOs.request.RequestUpdateProfileDtos;
-import com.ecommerce.DTOs.response.LoginResponse;
+import com.ecommerce.DTOs.response.userResponseDtos.LoginResponse;
 import com.ecommerce.DTOs.response.RegistrationResponse;
 import com.ecommerce.DTOs.response.ResponseUpdateProfileDtos;
 import com.ecommerce.data.model.User;
 import com.ecommerce.data.model.UserRole;
 import com.ecommerce.data.repositories.UserRepository;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,7 @@ class UserServiceImplTest {
 
     @AfterEach
     void tearDown() {
+
         userRepository.deleteAll();
     }
 
@@ -484,3 +486,6 @@ class UserServiceImplTest {
         }
 
     }
+
+
+
