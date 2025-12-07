@@ -3,9 +3,11 @@ package com.ecommerce.services;
 import com.ecommerce.DTOs.request.LoginRequest;
 import com.ecommerce.DTOs.request.RegistrationRequest;
 import com.ecommerce.DTOs.request.RequestUpdateProfileDtos;
-import com.ecommerce.DTOs.response.LoginResponse;
+
 import com.ecommerce.DTOs.response.RegistrationResponse;
 import com.ecommerce.DTOs.response.ResponseUpdateProfileDtos;
+import com.ecommerce.DTOs.response.userResponseDtos.LoginResponse;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,4 +20,6 @@ public interface UserService {
     ResponseUpdateProfileDtos updateProfile(String id, RequestUpdateProfileDtos requestDto);
 
     void promoteToSeller(String userId);
+
+
 }
