@@ -3,13 +3,18 @@ package com.ecommerce.services;
 
 import com.ecommerce.DTOs.request.productRequest.CreateProductRequest;
 import com.ecommerce.DTOs.response.productResponse.CreateProductResponse;
+import com.ecommerce.data.model.Category;
 import com.ecommerce.data.model.Product;
+import com.ecommerce.data.model.User;
 import com.ecommerce.data.repositories.ProductRepository;
+import com.ecommerce.data.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Document(collection = "products")
 @Service
@@ -17,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductServiceImpl implements ProductService {
 
 
+    private final UserRepository userRepository;
     private ProductRepository productRepository;
 
     @Override
@@ -47,6 +53,20 @@ public class ProductServiceImpl implements ProductService {
        if(createRequest.getProductPrice() <= 0){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price must be greater than zero");
        }
+
+       if(createRequest.getProductCategory() == null){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product category is required");
+       }
+
+       if(createRequest.getSellerId() == null || createRequest.getSellerId().trim().isBlank()){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller id is required");
+       }
+
+        Optional<User> seller = userRepository.findById(createRequest.getSellerId());
+       if(!seller.isPresent()){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller not found");
+       }
+
 
         Product productCreated = new Product();
         productCreated.setProductName(createRequest.getProductName());

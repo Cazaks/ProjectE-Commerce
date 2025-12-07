@@ -195,6 +195,61 @@ class ProductServiceImplTest {
         productService.createProduct(createRequest);
     }
 
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenProductCategoryIsNull() {
+        createRequest.setProductCategory(null);
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected product category");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product category is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenSellerIdIsNull() {
+        createRequest.setSellerId(null);
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected SellerId");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Seller id is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenSellerIdIsEmpty() {
+        createRequest.setSellerId("");
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected SellerId");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Seller id is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatCreateProductThrowsInvalidErrorWhenSellerDoesNotExist() {
+        createRequest.setSellerId("Seller_Not_Existing");
+
+        try {
+            productService.createProduct(createRequest);
+            fail("Expected SellerId");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Seller not found", ex.getReason());
+        }
+    }
 
 
 }
