@@ -103,12 +103,25 @@ public class ProductServiceImpl implements ProductService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product description not found");
         }
 
+        if(updateProductRequest.getProductPrice() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price not found");
+        }
+
         if(updateProductRequest.getProductPrice() <= 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price must be greater than 0");
         }
 
+        if(updateProductRequest.getProductQuantity() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity is required");
+        }
+
+        if(updateProductRequest.getProductQuantity() <= 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity must be greater than 0");
+        }
+
 
         Product updateProduct = productRepository.findById(updateProductRequest.getProductId()).orElse(null);
+
         if(updateProduct == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product not found");
         }

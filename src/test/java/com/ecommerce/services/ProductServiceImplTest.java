@@ -348,6 +348,20 @@ class ProductServiceImplTest {
     }
 
     @Test
+    void testThatUpdateProductThrowsInvalidErrorWhenProductPriceNull() {
+        updateRequest.setProductPrice(null);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product price not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product price not found", ex.getReason());
+        }
+    }
+
+    @Test
     void TestThatUpdateProductThrowsInvalidErrorWhenProductPriceIsNegative() {
         updateRequest.setProductPrice(-8.00);
 
@@ -374,6 +388,67 @@ class ProductServiceImplTest {
             assertEquals("Product price must be greater than 0", ex.getReason());
         }
     }
+
+    @Test
+    void TestThatUpdateProductIsSuccessfulWhenProductIdIsGreaterThanZero() {
+
+        Product oldPrice = new Product();
+        oldPrice.setProductId("Checking_Id");
+        oldPrice.setProductName("Old Name");
+        oldPrice.setProductDescription("Old Desc");
+        oldPrice.setProductPrice(1000.00);
+        oldPrice.setProductQuantity(5);
+        oldPrice.setProductCategory(Category.ELECTRONICS);
+
+        productRepository.save(oldPrice);
+        updateRequest.setProductPrice(2.00);
+
+        UpdateProductResponseDto updateResponse = productService.updateProduct(updateRequest);
+        assertEquals(2.00, updateResponse.getProductPrice());
+    }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductQuantityIsNull(){
+        updateRequest.setProductQuantity(null);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product quantity not null");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product quantity is required", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductQuantityIsZero(){
+        updateRequest.setProductQuantity(0);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product quantity greater than 0");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product quantity must be greater than 0", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductQuantityIsNegative(){
+        updateRequest.setProductQuantity(-1);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product quantity greater than 0");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product quantity must be greater than 0", ex.getReason());
+        }
+    }
+
 
     @Test
     void TestThatUpdateProductThrowsInvalidErrorWhenProductNameIsInvalid() {
