@@ -99,6 +99,10 @@ public class ProductServiceImpl implements ProductService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name not found");
         }
 
+        if(updateProductRequest.getProductDescription() == null || updateProductRequest.getProductDescription().trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product description not found");
+        }
+
 
         Product updateProduct = productRepository.findById(updateProductRequest.getProductId()).orElse(null);
         if(updateProduct == null) {

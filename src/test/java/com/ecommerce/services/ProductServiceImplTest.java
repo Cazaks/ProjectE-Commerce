@@ -319,9 +319,32 @@ class ProductServiceImplTest {
         }
     }
 
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductDescriptionIsNull() {
+        updateRequest.setProductDescription(null);
 
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product description not found");
+        }catch (ResponseStatusException ex) {
 
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product description not found", ex.getReason());
+        }
+    }
 
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductDescriptionIsEmpty() {
+        updateRequest.setProductDescription(" ");
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product description not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product description not found", ex.getReason());
+        }
     }
 
 
