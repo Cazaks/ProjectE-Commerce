@@ -103,6 +103,10 @@ public class ProductServiceImpl implements ProductService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product description not found");
         }
 
+        if(updateProductRequest.getProductPrice() <= 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price must be greater than 0");
+        }
+
 
         Product updateProduct = productRepository.findById(updateProductRequest.getProductId()).orElse(null);
         if(updateProduct == null) {

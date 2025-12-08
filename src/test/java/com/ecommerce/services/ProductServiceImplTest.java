@@ -347,6 +347,33 @@ class ProductServiceImplTest {
         }
     }
 
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductPriceIsNegative() {
+        updateRequest.setProductPrice(-8.00);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product price greater than 0");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product price must be greater than 0", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductPriceIsZero() {
+        updateRequest.setProductPrice(0.0);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product price greater than 0");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product price must be greater than 0", ex.getReason());
+        }
+    }
 
     @Test
     void TestThatUpdateProductThrowsInvalidErrorWhenProductNameIsInvalid() {
