@@ -1,71 +1,66 @@
 package com.ecommerce.services;
 
-
 import com.ecommerce.DTOs.request.productRequest.CreateProductRequest;
+import com.ecommerce.DTOs.request.productRequest.UpdateProductRequestDto;
 import com.ecommerce.DTOs.response.productResponse.CreateProductResponse;
-import com.ecommerce.data.model.Category;
+import com.ecommerce.DTOs.response.productResponse.UpdateProductResponseDto;
 import com.ecommerce.data.model.Product;
 import com.ecommerce.data.model.User;
 import com.ecommerce.data.repositories.ProductRepository;
 import com.ecommerce.data.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
-@Document(collection = "products")
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-
     private final UserRepository userRepository;
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     @Override
-    public CreateProductResponse createProduct(CreateProductRequest createRequest){
+    public CreateProductResponse createProduct(CreateProductRequest createRequest) {
 
+        if (createRequest.getProductName() == null || createRequest.getProductName().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name cannot be empty");
+        }
 
-       if(createRequest.getProductName() == null || createRequest.getProductName().trim().isBlank()){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name cannot be empty");
-      }
+        if (createRequest.getProductDescription() == null || createRequest.getProductDescription().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product description cannot be empty");
+        }
 
-       if(createRequest.getProductDescription() == null || createRequest.getProductDescription().trim().isBlank()){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product description cannot be empty");
-       }
-
-
-        if(createRequest.getProductQuantity() == null){
+        if (createRequest.getProductQuantity() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity is required");
         }
 
-       if(createRequest.getProductQuantity() <= 0){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity must be greater than zero");
-       }
+        if (createRequest.getProductQuantity() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity must be greater than zero");
+        }
 
-       if(createRequest.getProductPrice() == null){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price is required");
-       }
+        if (createRequest.getProductPrice() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price is required");
+        }
 
-       if(createRequest.getProductPrice() <= 0){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price must be greater than zero");
-       }
+        if (createRequest.getProductPrice() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product price must be greater than zero");
+        }
 
-       if(createRequest.getProductCategory() == null){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product category is required");
-       }
+        if (createRequest.getProductCategory() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product category is required");
+        }
 
-       if(createRequest.getSellerId() == null || createRequest.getSellerId().trim().isBlank()){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller id is required");
-       }
+        if (createRequest.getSellerId() == null || createRequest.getSellerId().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller id is required");
+        }
 
         Optional<User> seller = userRepository.findById(createRequest.getSellerId());
-       if(!seller.isPresent()){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller not found");
-       }
+        if (!seller.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller not found");
+        }
 
 
         Product productCreated = new Product();
@@ -78,21 +73,51 @@ public class ProductServiceImpl implements ProductService {
 
         productCreated = productRepository.save(productCreated);
 
-        CreateProductResponse createResponse = mapToProductResponse(productCreated);
-
-        return createResponse;
-
+        return mapToProductResponse(productCreated);
     }
 
     private static CreateProductResponse mapToProductResponse(Product productCreated) {
-        CreateProductResponse createResponse = new CreateProductResponse();
-        createResponse.setProductId(productCreated.getProductId());
-        createResponse.setProductName(productCreated.getProductName());
-        createResponse.setProductDescription(productCreated.getProductDescription());
-        createResponse.setProductPrice(productCreated.getProductPrice());
-        createResponse.setProductQuantity(productCreated.getProductQuantity());
-        createResponse.setProductCategory(productCreated.getProductCategory());
-        createResponse.setSellerId(productCreated.getSellerId());
-        return createResponse;
+        CreateProductResponse response = new CreateProductResponse();
+        response.setProductId(productCreated.getProductId());
+        response.setProductName(productCreated.getProductName());
+        response.setProductDescription(productCreated.getProductDescription());
+        response.setProductPrice(productCreated.getProductPrice());
+        response.setProductQuantity(productCreated.getProductQuantity());
+        response.setProductCategory(productCreated.getProductCategory());
+        response.setSellerId(productCreated.getSellerId());
+        return response;
+    }
+
+    @Override
+    public UpdateProductResponseDto updateProduct(UpdateProductRequestDto updateProductRequest) {
+
+        Product updateProduct = productRepository.findById(updateProductRequest.getProductId()).orElse(null);
+        if(updateProduct == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product not found");
+        }
+
+        updateProduct.setProductName(updateProductRequest.getProductName());
+        updateProduct.setProductQuantity(updateProductRequest.getProductQuantity());
+        updateProduct.setProductDescription(updateProductRequest.getProductDescription());
+        updateProduct.setProductPrice(updateProductRequest.getProductPrice());
+        updateProduct.setProductCategory(updateProductRequest.getProductCategory());
+
+        Product savedProduct = productRepository.save(updateProduct);
+
+        UpdateProductResponseDto updateResponse = getUpdateProductResponseDto(savedProduct);
+
+        return updateResponse;
+    }
+
+    private static UpdateProductResponseDto getUpdateProductResponseDto(Product savedProduct) {
+        UpdateProductResponseDto updateResponse = new UpdateProductResponseDto();
+        updateResponse.setProductId(savedProduct.getProductId());
+        updateResponse.setProductName(savedProduct.getProductName());
+        updateResponse.setProductQuantity(savedProduct.getProductQuantity());
+        updateResponse.setProductDescription(savedProduct.getProductDescription());
+        updateResponse.setProductPrice(savedProduct.getProductPrice());
+        updateResponse.setProductCategory(savedProduct.getProductCategory());
+        updateResponse.setMessage("Product Updated successful");
+        return updateResponse;
     }
 }

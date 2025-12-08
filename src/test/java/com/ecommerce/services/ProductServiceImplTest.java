@@ -1,6 +1,7 @@
 package com.ecommerce.services;
 
 import com.ecommerce.DTOs.request.productRequest.CreateProductRequest;
+import com.ecommerce.DTOs.request.productRequest.UpdateProductRequestDto;
 import com.ecommerce.DTOs.response.productResponse.CreateProductResponse;
 import com.ecommerce.data.model.Category;
 import com.ecommerce.data.model.Product;
@@ -32,6 +33,7 @@ class ProductServiceImplTest {
     private ProductService productService;
 
     private CreateProductRequest createRequest;
+    private UpdateProductRequestDto updateRequest;
 
     @BeforeEach
     void setUp() {
@@ -49,6 +51,14 @@ class ProductServiceImplTest {
         createRequest.setProductQuantity(15);
         createRequest.setProductCategory(Category.ELECTRONICS);
         createRequest.setSellerId("SELLER2a4");
+
+        updateRequest = new UpdateProductRequestDto();
+        updateRequest.setProductId("Checking_Id");
+        updateRequest.setProductName("iPhone 17 ultra");
+        updateRequest.setProductQuantity(7);
+        updateRequest.setProductDescription("This phone can snap your inner intestine");
+        updateRequest.setProductPrice(1_550_000.00);
+        updateRequest.setProductCategory(Category.ELECTRONICS);
 
     }
 
@@ -250,6 +260,20 @@ class ProductServiceImplTest {
             assertEquals("Seller not found", ex.getReason());
         }
     }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductIsNotFound() {
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product not found", ex.getReason());
+        }
+    }
+
+
 
 
 }
