@@ -3,6 +3,7 @@ package com.ecommerce.services;
 import com.ecommerce.DTOs.request.productRequest.CreateProductRequest;
 import com.ecommerce.DTOs.request.productRequest.UpdateProductRequestDto;
 import com.ecommerce.DTOs.response.productResponse.CreateProductResponse;
+import com.ecommerce.DTOs.response.productResponse.UpdateProductResponseDto;
 import com.ecommerce.data.model.Category;
 import com.ecommerce.data.model.Product;
 import com.ecommerce.data.model.User;
@@ -261,6 +262,83 @@ class ProductServiceImplTest {
         }
     }
 
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductIdIsNull() {
+        updateRequest.setProductId(null);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product id not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product id not found", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductIdIsEmpty() {
+        updateRequest.setProductId("");
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product id not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product id not found", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductNameIsNull() {
+        updateRequest.setProductName(null);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product name not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product name not found", ex.getReason());
+        }
+    }
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductNameIsEmpty() {
+        updateRequest.setProductName(" ");
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product name not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product name not found", ex.getReason());
+        }
+    }
+
+
+
+
+    }
+
+
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductNameIsInvalid() {
+        updateRequest.setProductName("invalid_name");
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product valid name not found");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product not found", ex.getReason());
+        }
+    }
+
     @Test
     void TestThatUpdateProductThrowsInvalidErrorWhenProductIsNotFound() {
         try {
@@ -273,7 +351,32 @@ class ProductServiceImplTest {
         }
     }
 
+    @Test
+    void TestThatUpdateProductWasUpdatedSuccessfully() {
 
+        Product existing = new Product();
+        existing.setProductId("Checking_Id");
+        existing.setProductName("Old Name");
+        existing.setProductDescription("Old Desc");
+        existing.setProductPrice(1000.00);
+        existing.setProductQuantity(5);
+        existing.setProductCategory(Category.ELECTRONICS);
 
+        productRepository.save(existing);
 
+        UpdateProductResponseDto updateResponse = productService.updateProduct(updateRequest);
+
+        assertNotNull(updateResponse.getProductId(), "Product ID cannot be null");
+        assertEquals(updateResponse.getProductName(),updateRequest.getProductName());
+        assertEquals(updateResponse.getProductPrice(),updateRequest.getProductPrice());
+        assertEquals(updateResponse.getProductDescription(), updateRequest.getProductDescription());
+        assertEquals(updateResponse.getProductPrice(), updateRequest.getProductPrice());
+        assertEquals(updateResponse.getProductCategory(), updateRequest.getProductCategory());
+
+        Product saved = productRepository.findById(updateResponse.getProductId()).orElse(null);
+        assertNotNull(saved, "Product must exist in DB");
+
+        assertEquals("iPhone 17 ultra",  saved.getProductName());
+
+    }
 }
