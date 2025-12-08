@@ -119,6 +119,10 @@ public class ProductServiceImpl implements ProductService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product quantity must be greater than 0");
         }
 
+        if(updateProductRequest.getProductCategory() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product category is required");
+        }
+
 
         Product updateProduct = productRepository.findById(updateProductRequest.getProductId()).orElse(null);
 

@@ -449,6 +449,20 @@ class ProductServiceImplTest {
         }
     }
 
+    @Test
+    void TestThatUpdateProductThrowsInvalidErrorWhenProductCategoryIsNull(){
+        updateRequest.setProductCategory(null);
+
+        try {
+            productService.updateProduct(updateRequest);
+            fail("Expected product category not null");
+        }catch (ResponseStatusException ex) {
+
+            assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+            assertEquals("Product category is required", ex.getReason());
+        }
+    }
+
 
     @Test
     void TestThatUpdateProductThrowsInvalidErrorWhenProductNameIsInvalid() {
