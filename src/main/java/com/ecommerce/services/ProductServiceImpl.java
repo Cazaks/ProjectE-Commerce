@@ -91,10 +91,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public UpdateProductResponseDto updateProduct(UpdateProductRequestDto updateProductRequest) {
 
+        if(updateProductRequest.getProductId() == null || updateProductRequest.getProductId().trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product id not found");
+        }
+
+        if(updateProductRequest.getProductName() == null || updateProductRequest.getProductName().trim().isBlank()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name not found");
+        }
+
+
         Product updateProduct = productRepository.findById(updateProductRequest.getProductId()).orElse(null);
         if(updateProduct == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product not found");
         }
+
 
         updateProduct.setProductName(updateProductRequest.getProductName());
         updateProduct.setProductQuantity(updateProductRequest.getProductQuantity());
@@ -104,9 +114,8 @@ public class ProductServiceImpl implements ProductService {
 
         Product savedProduct = productRepository.save(updateProduct);
 
-        UpdateProductResponseDto updateResponse = getUpdateProductResponseDto(savedProduct);
+        return getUpdateProductResponseDto(savedProduct);
 
-        return updateResponse;
     }
 
     private static UpdateProductResponseDto getUpdateProductResponseDto(Product savedProduct) {
